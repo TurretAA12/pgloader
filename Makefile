@@ -3,7 +3,7 @@ APP_NAME   = pgloader
 VERSION    = 3.6.2
 
 # use either sbcl or ccl
-CL	   = sbcl
+CL	   = armcl
 
 # default to 4096 MB of RAM size in the image
 DYNSIZE    = 4096
@@ -100,7 +100,9 @@ clones: $(QLDIR)/local-projects/cl-ixf \
         $(QLDIR)/local-projects/qmynd ;
 
 $(LIBS): $(QLDIR)/setup.lisp
-	$(CL) $(CL_OPTS) --load $(QLDIR)/setup.lisp                   \
+	$(CL) $(CL_OPTS)																										\
+						 --load /home/pi/pgloader/asdf.lisp                       \
+						 --load $(QLDIR)/setup.lisp                   						\
              --eval '(push :pgloader-image *features*)'               \
              --eval '(setf *print-circle* t *print-pretty* t)'        \
              --eval '(push "$(PWD)/" ql:*local-project-directories*)' \
@@ -111,7 +113,9 @@ $(LIBS): $(QLDIR)/setup.lisp
 libs: $(LIBS) ;
 
 $(MANIFEST): $(LIBS)
-	$(CL) $(CL_OPTS) --load $(QLDIR)/setup.lisp                \
+	$(CL) $(CL_OPTS)																								 \
+						 --load /home/pi/pgloader/asdf.lisp                    \
+						 --load $(QLDIR)/setup.lisp                            \
              --eval '(ql:write-asdf-manifest-file "$(MANIFEST)")'  \
              --eval '(quit)'
 
@@ -119,14 +123,18 @@ manifest: $(MANIFEST) ;
 
 $(BUILDAPP_CCL): $(QLDIR)/setup.lisp
 	mkdir -p $(BUILDDIR)/bin
-	$(CL) $(CL_OPTS) --load $(QLDIR)/setup.lisp               \
+	$(CL) $(CL_OPTS) 																								\
+						 --load /home/pi/pgloader/asdf.lisp                   \
+						 --load $(QLDIR)/setup.lisp                           \
              --eval '(ql:quickload "buildapp")'                   \
              --eval '(buildapp:build-buildapp "$@")'              \
              --eval '(quit)'
 
 $(BUILDAPP_SBCL): $(QLDIR)/setup.lisp
 	mkdir -p $(BUILDDIR)/bin
-	$(CL) $(CL_OPTS) --load $(QLDIR)/setup.lisp               \
+	$(CL) $(CL_OPTS) 																								\
+						 --load /home/pi/pgloader/asdf.lisp                   \
+						 --load $(QLDIR)/setup.lisp               						\
              --eval '(ql:quickload "buildapp")'                   \
              --eval '(buildapp:build-buildapp "$@")'              \
              --eval '(quit)'
@@ -184,7 +192,9 @@ $(BUNDLETESTD):
 
 $(BUNDLEDIR):
 	mkdir -p $@
-	$(CL) $(CL_OPTS) --load $(QLDIR)/setup.lisp      \
+	$(CL) $(CL_OPTS) 																			 \
+						--load /home/pi/pgloader/asdf.lisp           \
+						 --load $(QLDIR)/setup.lisp      						 \
              --eval '(defvar *bundle-dir* "$@")'         \
              --eval '(defvar *pwd* "$(PWD)/")'           \
              --eval '(defvar *ql-dist* "$(BUNDLEDIST)")' \
